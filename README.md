@@ -1,4 +1,4 @@
-# spin_hamiltonian_fitting
+# fit_Hs
 
 Spin Hamiltonian parameters from DFT: set up and harvest VASP/ORCA jobs for chosen spin
 configurations, then fit the parameters to the energies or dipoles.
@@ -18,8 +18,8 @@ Requirements: Python ≥ 3.8 and pip ≥ 21.3. numpy, scipy, pyyaml and matplotl
 automatically; ase is optional.
 
 ```bash
-git clone https://github.com/shuanglongliu/spin_hamiltonian_fitting.git
-cd spin_hamiltonian_fitting
+git clone https://github.com/shuanglongliu/fit_Hs.git
+cd fit_Hs
 
 # optional: a separate environment
 conda create -n shf python=3.11 && conda activate shf     # or: python -m venv .venv && source .venv/bin/activate
