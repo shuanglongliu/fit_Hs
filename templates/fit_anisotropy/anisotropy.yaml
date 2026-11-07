@@ -1,4 +1,4 @@
-# Settings for `shf anisotropy <task>`, one section per task.
+# Settings for `spinh anisotropy <task>`, one section per task.
 #   input:   table <input>.dat;  columns: 1-indexed (theta, phi, energy) columns
 #   angles in degrees, energies in the table in eV, fitted energies in meV
 # energies.dat and curve.dat in this template are synthetic (S = 2, D = -0.8 meV, E = -0.15 meV,

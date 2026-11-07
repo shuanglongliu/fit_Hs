@@ -18,7 +18,7 @@ import sys
 import numpy as np
 
 import data
-from shf.dft.noncollinear import SaxisJobs
+from spinh.dft.noncollinear import SaxisJobs
 
 
 def find_global_directions():

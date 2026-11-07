@@ -1,7 +1,7 @@
 # Spin-driven electric polarization
 
-DFT: `site_vasp` (`python main.py dipoles` writes `dipoles.dat`). Fit: `shf new
-fit_polarization_<model> <dir>`, then in it `shf polarization <model>`.
+DFT: `site_vasp` (`python main.py dipoles` writes `dipoles.dat`). Fit: `spinh new
+fit_polarization_<model> <dir>`, then in it `spinh polarization <model>`.
 
 All models fit *y*, the change of the dipole of every configuration relative to the first one,
 by minimizing |*A x* − *y*|². When the data do not determine every parameter, the minimum-norm

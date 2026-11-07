@@ -14,8 +14,8 @@ reported in meV and cm^-1.
 import numpy as np
 import yaml
 
-from shf import linfit, units
-from shf.geometry import sph2cart
+from spinh import linfit, units
+from spinh.geometry import sph2cart
 
 LABELS = ["xx", "xy", "xz", "yx", "yy", "yz", "zx", "zy", "zz"]
 

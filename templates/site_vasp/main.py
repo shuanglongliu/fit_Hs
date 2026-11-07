@@ -17,8 +17,8 @@ to the moments). Pick one at the bottom.
 import sys
 
 import data
-from shf.dft.noncollinear import SiteJobs
-from shf.dft.vasp import VaspJob
+from spinh.dft.noncollinear import SiteJobs
+from spinh.dft.vasp import VaspJob
 
 
 def check_and_resubmit():

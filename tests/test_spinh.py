@@ -17,10 +17,10 @@ import unittest
 import numpy as np
 import yaml
 
-from shf import cli, geometry
-from shf.models import single_ion_anisotropy
-from shf.sphere import Sphere
-from shf.spin_operators import spin_operators
+from spinh import cli, geometry
+from spinh.models import single_ion_anisotropy
+from spinh.sphere import Sphere
+from spinh.spin_operators import spin_operators
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REFERENCE = os.path.join(HERE, "reference")
@@ -66,7 +66,7 @@ class TempDirTest(unittest.TestCase):
             cli.main(["new", template, path])
         return path
 
-    def shf(self, *argv):
+    def spinh(self, *argv):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             cli.main(list(argv))
@@ -163,13 +163,13 @@ class TestFits(TempDirTest):
 
     def test_isotropic_exchange(self):
         path = self.new("fit_isotropic_exchange")
-        self.shf("isotropic-exchange", "-d", path)
+        self.spinh("isotropic-exchange", "-d", path)
         with open(os.path.join(path, "Js.csv")) as f:
             self.assertEqual(f.read(), reference("Js.csv"))
 
     def test_anisotropic_exchange(self):
         path = self.new("fit_anisotropic_exchange")
-        out = self.shf("anisotropic-exchange", "fit", "-d", path, "--format", "2")
+        out = self.spinh("anisotropic-exchange", "fit", "-d", path, "--format", "2")
         meV = [float(v) for v in out.split("J (meV):")[1].split("\n")[0].split()]
         self.assertEqual(len(meV), 27)
         self.assertAlmostEqual(meV[0], -1.884, places=3)
@@ -182,7 +182,7 @@ class TestFits(TempDirTest):
             ("fit_polarization_full_p_v2", "full-p-v2", {"P_for_latex.log": "full_p_v2_P_for_latex.log",
                                                          "relative_contribution.log": "full_p_v2_relative_contribution.log"})]:
             path = self.new(template)
-            self.shf("polarization", model, "-d", path)
+            self.spinh("polarization", model, "-d", path)
             for out, ref in files.items():
                 with open(os.path.join(path, out)) as f:
                     self.assertEqual(f.read(), reference(ref), out)
@@ -190,7 +190,7 @@ class TestFits(TempDirTest):
     def test_anisotropy_tasks(self):
         path = self.new("fit_anisotropy")
         for task in ("average", "change-frame", "mae", "plot", "fit-DE", "fit-D-tensor", "fit-curve", "fit-surface"):
-            self.shf("anisotropy", task, "-d", path)
+            self.spinh("anisotropy", task, "-d", path)
         for out, ref in (("energies_average.dat", "energies_average.dat"), ("new_frame.dat", "new_frame.dat")):
             with open(os.path.join(path, out)) as f:
                 self.assertEqual(f.read(), reference(ref), out)

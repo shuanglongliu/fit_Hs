@@ -4,13 +4,13 @@
     python main.py submit
     python main.py check      # convergence;  resubmit: resubmit the unconverged jobs
     python main.py magmoms    # site moments
-    python main.py energies   # energies.dat for `shf isotropic-exchange`
+    python main.py energies   # energies.dat for `spinh isotropic-exchange`
 """
 
 import sys
 
 import data
-from shf.dft.collinear import CollinearVaspJobs
+from spinh.dft.collinear import CollinearVaspJobs
 
 if __name__ == "__main__":
     # There are 12 exchange couplings. At least 13 magnetic configurations are needed to determine them.

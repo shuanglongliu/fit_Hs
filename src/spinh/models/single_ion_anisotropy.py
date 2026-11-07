@@ -5,18 +5,18 @@ templates/fit_anisotropy/anisotropy.yaml). Input files are text tables; ``column
 (theta, phi, energy) columns, angles in degrees and energies in eV.
 
 Frames: the anisotropy eigenframe is the DFT frame ``frame`` (rows = axes, default identity)
-rotated by the extrinsic zyz Euler angles (alpha, beta, gamma), see shf.geometry.rotate_frame:
+rotated by the extrinsic zyz Euler angles (alpha, beta, gamma), see spinh.geometry.rotate_frame:
 its z axis points along (theta, phi) = (beta, gamma) and alpha turns x and y about it.
 """
 
 import numpy as np
 from scipy.optimize import curve_fit
 
-from shf import units
-from shf.geometry import (cart2sph, change_frame_angles, change_frame_sph, get_emat_local,
+from spinh import units
+from spinh.geometry import (cart2sph, change_frame_angles, change_frame_sph, get_emat_local,
                           opposite_direction, rotate_frame, sph2cart)
-from shf.plotting import plot_fit
-from shf.spin_operators import expectation, spin_operators, top_state
+from spinh.plotting import plot_fit
+from spinh.spin_operators import expectation, spin_operators, top_state
 
 
 def load(cfg):

@@ -7,13 +7,13 @@
     python main.py restart-inputs   # inputs that read the spin state from dft.gbw (no FlipSpin/FinalMs)
     python main.py resubmit         # resubmit the unconverged jobs
     python main.py magmoms [tol]    # check the Loewdin spin populations against expected_magmoms
-    python main.py energies [tol]   # energies.dat (Ha) for `shf isotropic-exchange`
+    python main.py energies [tol]   # energies.dat (Ha) for `spinh isotropic-exchange`
 """
 
 import sys
 
 import data
-from shf.dft.orca import BsDftManager
+from spinh.dft.orca import BsDftManager
 
 if __name__ == "__main__":
     BsDftManager(data).run(sys.argv[1:], magmom_tolerance=0.3)

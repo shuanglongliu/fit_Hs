@@ -5,10 +5,10 @@ configurations, then fit the parameters to the energies or dipoles.
 
 | Parameters | DFT jobs (template) | Fit | Docs |
 |---|---|---|---|
-| Isotropic exchange *J* | `collinear_vasp`, `collinear_orca` | `shf isotropic-exchange` | [isotropic_exchange.md](docs/isotropic_exchange.md) |
-| Exchange matrices **J** (3×3 per pair) | `site_vasp` | `shf anisotropic-exchange fit` | [anisotropic_exchange.md](docs/anisotropic_exchange.md) |
-| Single-ion anisotropy (*D*, *E*, **D** tensor) | `saxis_vasp`, `site_vasp` | `shf anisotropy <task>` | [single_ion_anisotropy.md](docs/single_ion_anisotropy.md) |
-| Spin-driven electric polarization | `site_vasp` (`dipoles`) | `shf polarization <model>` | [polarization.md](docs/polarization.md) |
+| Isotropic exchange *J* | `collinear_vasp`, `collinear_orca` | `spinh isotropic-exchange` | [isotropic_exchange.md](docs/isotropic_exchange.md) |
+| Exchange matrices **J** (3×3 per pair) | `site_vasp` | `spinh anisotropic-exchange fit` | [anisotropic_exchange.md](docs/anisotropic_exchange.md) |
+| Single-ion anisotropy (*D*, *E*, **D** tensor) | `saxis_vasp`, `site_vasp` | `spinh anisotropy <task>` | [single_ion_anisotropy.md](docs/single_ion_anisotropy.md) |
+| Spin-driven electric polarization | `site_vasp` (`dipoles`) | `spinh polarization <model>` | [polarization.md](docs/polarization.md) |
 
 The DFT job templates are described in [dft_jobs.md](docs/dft_jobs.md).
 
@@ -22,29 +22,29 @@ git clone https://github.com/shuanglongliu/spinh.git
 cd spinh
 
 # optional: a separate environment
-conda create -n shf python=3.11 && conda activate shf     # or: python -m venv .venv && source .venv/bin/activate
+conda create -n spinh python=3.11 && conda activate spinh     # or: python -m venv .venv && source .venv/bin/activate
 
-pip install -e .                  # the shf package and the shf command
-pip install -e ".[structure]"     # also ase, needed for `shf anisotropic-exchange frame`
+pip install -e .                  # the spinh package and the spinh command
+pip install -e ".[structure]"     # also ase, needed for `spinh anisotropic-exchange frame`
 ```
 
 `-e` (editable) links the installed package to this checkout, so a `git pull` takes effect
-without reinstalling. Job scripts (`main.py`) import `shf`, so they run from any directory
-while the environment with `shf` is active.
+without reinstalling. Job scripts (`main.py`) import `spinh`, so they run from any directory
+while the environment with `spinh` is active.
 
 Check the install:
 
 ```bash
-shf -h
+spinh -h
 python -m unittest discover tests     # from the repository root
 ```
 
-To remove it: `pip uninstall shf`.
+To remove it: `pip uninstall spinh`.
 
 ## A new system
 
 ```bash
-shf new site_vasp ~/runs/Mn3      # copy a template: data.py + main.py
+spinh new site_vasp ~/runs/Mn3      # copy a template: data.py + main.py
 cd ~/runs/Mn3
 # 1. data.py: INCAR, POSCAR, KPOINTS, job script; put POTCAR here
 # 2. main.py: the spin configurations
@@ -55,20 +55,20 @@ python main.py check              # later: convergence
 python main.py energies           # energies.dat (dipoles: dipoles.dat)
 ```
 
-then fit, e.g. `shf new fit_anisotropy ~/runs/Mn3/fit`, edit `anisotropy.yaml`, and run
-`shf anisotropy fit-DE`. `shf -h`, `shf <command> -h` and `python main.py help` list the options.
+then fit, e.g. `spinh new fit_anisotropy ~/runs/Mn3/fit`, edit `anisotropy.yaml`, and run
+`spinh anisotropy fit-DE`. `spinh -h`, `spinh <command> -h` and `python main.py help` list the options.
 
 ## Layout
 
 ```
-src/shf/
+src/spinh/
 ├── geometry.py, sphere.py        # spherical coordinates, frames, Euler rotations; direction grid
 ├── spin_operators.py, units.py
 ├── linfit.py, tables.py, plotting.py
 ├── dft/                          # job sets: VASP (collinear, SAXIS, per-site MAGMOM), ORCA, Slurm
 ├── models/                       # isotropic and anisotropic exchange, single-ion anisotropy, polarization
-└── cli.py                        # the shf command
-templates/                        # starting points for `shf new`
+└── cli.py                        # the spinh command
+templates/                        # starting points for `spinh new`
 ├── collinear_vasp, collinear_orca, saxis_vasp, site_vasp      # data.py + main.py
 └── fit_*                         # fit inputs with example data
 docs/

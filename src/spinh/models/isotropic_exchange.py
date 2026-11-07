@@ -11,8 +11,8 @@ fitting_quality.pdf.
 import numpy as np
 import yaml
 
-from shf import linfit, units
-from shf.plotting import plot_fit
+from spinh import linfit, units
+from spinh.plotting import plot_fit
 
 
 def read_energies(fname="energies.dat", energy_threshold=None):

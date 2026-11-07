@@ -5,10 +5,10 @@ $$H = \text{factor} \sum_k J_k \sum_{\langle ij \rangle \in k} \mathbf{S}_i \cdo
 `factor` is −2 by default (`--factor`).
 
 DFT: `collinear_vasp` or `collinear_orca` (`python main.py energies` writes `energies.dat`).
-Fit: `shf new fit_isotropic_exchange <dir>`, then in it
+Fit: `spinh new fit_isotropic_exchange <dir>`, then in it
 
 ```bash
-shf isotropic-exchange [--factor -2] [--threshold 1000]
+spinh isotropic-exchange [--factor -2] [--threshold 1000]
 ```
 
 Inputs:

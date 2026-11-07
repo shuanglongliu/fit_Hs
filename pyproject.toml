@@ -3,7 +3,7 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "shf"
+name = "spinh"
 version = "0.1.0"
 description = "Spin Hamiltonian parameters from DFT calculations: job setup and fitting"
 readme = "README.md"
@@ -15,7 +15,7 @@ dependencies = ["numpy", "scipy", "pyyaml", "matplotlib"]
 structure = ["ase"]
 
 [project.scripts]
-shf = "shf.cli:main"
+spinh = "spinh.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

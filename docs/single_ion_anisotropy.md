@@ -3,10 +3,10 @@
 DFT: `saxis_vasp` (the whole system's spin axis) or `site_vasp` (one site rotated, the others
 fixed). `python main.py energies` writes `energies.dat`.
 
-Analysis: `shf new fit_anisotropy <dir>` gives `anisotropy.yaml` (one section per task) and
+Analysis: `spinh new fit_anisotropy <dir>` gives `anisotropy.yaml` (one section per task) and
 synthetic example data. In the directory:
 
-| `shf anisotropy …` | |
+| `spinh anisotropy …` | |
 |---|---|
 | `average` | average E(**n**) and E(−**n**) (removes the exchange with fixed neighbours) → `<input>_average.dat` |
 | `change-frame` | directions in a frame with z along `z_direction`, or the lowest/highest-energy direction → `new_frame.dat` |
@@ -27,7 +27,7 @@ are ignored. `spin` is the spin quantum number of the quantum models.
 values (default: the middle of the bounds). Angles are in degrees.
 
 The eigenframe is the frame of the data (`frame`, default the identity) rotated by the extrinsic
-zyz Euler angles (α, β, γ) — `shf.geometry.rotate_frame` — the same convention as the Euler
+zyz Euler angles (α, β, γ) — `spinh.geometry.rotate_frame` — the same convention as the Euler
 angles of the polarization constraints:
 
 - the eigenframe's z axis points along (θ, φ) = (β, γ);

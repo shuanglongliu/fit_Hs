@@ -15,9 +15,9 @@ Full tensors are stored as x[27 k + 9 gamma + 3 alpha + beta].
 import numpy as np
 import yaml
 
-from shf import linfit
-from shf.geometry import euler_zyz, sph2cart
-from shf.plotting import plot_fit
+from spinh import linfit
+from spinh.geometry import euler_zyz, sph2cart
+from spinh.plotting import plot_fit
 
 UNIT = "e Ang"
 

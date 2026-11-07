@@ -1,6 +1,6 @@
 # DFT jobs
 
-A job directory holds `data.py` and `main.py`, created by `shf new <template> <dir>`:
+A job directory holds `data.py` and `main.py`, created by `spinh new <template> <dir>`:
 
 - `data.py` is the calculation: input templates (INCAR, POSCAR, KPOINTS or the ORCA input), the
   Slurm job script and system settings. `root_dir` is the directory of `data.py`; the job
@@ -11,7 +11,7 @@ A job directory holds `data.py` and `main.py`, created by `shf new <template> <d
 | Template | Spins | INCAR fields | Directory names |
 |---|---|---|---|
 | `collinear_vasp` | up/down per site (`MAGMOM`, `NUPDOWN`) | `{magmom}`, `{nupdown}`, `{U}`, `{J}` | `uudu…` |
-| `collinear_orca` | broken-symmetry ORCA (`FlipSpin`, `FinalMs`) | see `shf.dft.orca` | `uudu…` |
+| `collinear_orca` | broken-symmetry ORCA (`FlipSpin`, `FinalMs`) | see `spinh.dft.orca` | `uudu…` |
 | `saxis_vasp` | one axis for the whole system (`SAXIS`) | `{sstring}` | `6476401` |
 | `site_vasp` | one moment direction per site (`MAGMOM`, `M_CONSTR`, `RWIGS`) | `{mstring}`, `{rwigs}` | `4319101_0_0` |
 
@@ -64,7 +64,7 @@ energies within `myjob.max_energy` of `myjob.e_ref`.
 
 `collinear_vasp` actions: `setup`, `submit`, `check`, `resubmit`, `magmoms`, `energies`.
 `collinear_orca` actions: `setup`, `submit`, `check`, `backup`, `restart-inputs`, `resubmit`,
-`magmoms [tol]`, `energies [tol]`; see the docstring of `shf.dft.orca`.
+`magmoms [tol]`, `energies [tol]`; see the docstring of `spinh.dft.orca`.
 
 ## Output files
 

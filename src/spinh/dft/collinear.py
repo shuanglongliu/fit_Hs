@@ -4,9 +4,9 @@ fields {magmom}, {nupdown}, {U} and {J}."""
 
 import os
 
-from shf.dft.slurm import run_action
-from shf.dft.vasp import VaspJob
-from shf.tables import write_collinear_energies
+from spinh.dft.slurm import run_action
+from spinh.dft.vasp import VaspJob
+from spinh.tables import write_collinear_energies
 
 
 class CollinearVaspJobs:

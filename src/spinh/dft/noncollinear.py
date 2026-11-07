@@ -3,7 +3,7 @@
 A configuration lists a direction (theta, phi) in degrees for each site. Directions can be given
 in the global frame or in local frames (one per site, rows = axes), and are kept in both. Each
 configuration runs in a directory named after its directions snapped to a grid (see
-shf.sphere), e.g. "4319101_0_0".
+spinh.sphere), e.g. "4319101_0_0".
 
 SiteJobs     one MAGMOM vector per site (and M_CONSTR / RWIGS); INCAR fields {mstring}, {rwigs}.
              directions_of = "magmom" or "spin" (spin = opposite of the moment).
@@ -17,12 +17,12 @@ import subprocess
 
 import numpy as np
 
-from shf.dft.slurm import run_action
-from shf.dft.vasp import VaspJob
-from shf.geometry import (angle_between, angle_between_sph, cart2sph, change_frame_sph, get_emat_local,
+from spinh.dft.slurm import run_action
+from spinh.dft.vasp import VaspJob
+from spinh.geometry import (angle_between, angle_between_sph, cart2sph, change_frame_sph, get_emat_local,
                           opposite_direction, sph2cart)
-from shf.sphere import Sphere
-from shf.tables import write_direction_table
+from spinh.sphere import Sphere
+from spinh.tables import write_direction_table
 
 
 class DirectionJobs:

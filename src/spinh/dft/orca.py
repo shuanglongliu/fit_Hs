@@ -15,8 +15,8 @@ import csv
 import os
 import subprocess
 
-from shf.dft.slurm import run_action
-from shf.tables import write_collinear_energies
+from spinh.dft.slurm import run_action
+from spinh.tables import write_collinear_energies
 
 
 class BsDft:

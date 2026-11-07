@@ -12,10 +12,10 @@ with the spins rotated into the frame of pair *ij*. With *n* pairs there are 9*n
 ordered pair-1 xx, xy, …, pair-n zz.
 
 DFT: `site_vasp` (see the "Exchange interaction" configuration blocks in its `main.py`).
-Fit: `shf new fit_anisotropic_exchange <dir>`, then in it
+Fit: `spinh new fit_anisotropic_exchange <dir>`, then in it
 
 ```bash
-shf anisotropic-exchange fit [--factor -2] [--quantum-correction] [--format 1|2]
+spinh anisotropic-exchange fit [--factor -2] [--quantum-correction] [--format 1|2]
 ```
 
 *J* is printed in meV and cm⁻¹ (format 1: per pair; format 2: one line per unit).
@@ -43,11 +43,11 @@ squares and the residual is printed.
 
 | Command | |
 |---|---|
-| `shf anisotropic-exchange frame I J --structure POSCAR` | frame of pair (I, J): e<sub>x</sub> along the bond, e<sub>z</sub> the part of the global z axis normal to it (needs ase); prints a `reference_frame:` line |
-| `shf anisotropic-exchange average` | `energies_average.dat`: energy of row k averaged with row k + m/2 of `energies.dat` |
-| `shf anisotropic-exchange entries I J [--n-pair 9]` | `energies:` entries for sites I, J from `energies.dat`, row k paired with row k + 9 |
+| `spinh anisotropic-exchange frame I J --structure POSCAR` | frame of pair (I, J): e<sub>x</sub> along the bond, e<sub>z</sub> the part of the global z axis normal to it (needs ase); prints a `reference_frame:` line |
+| `spinh anisotropic-exchange average` | `energies_average.dat`: energy of row k averaged with row k + m/2 of `energies.dat` |
+| `spinh anisotropic-exchange entries I J [--n-pair 9]` | `energies:` entries for sites I, J from `energies.dat`, row k paired with row k + 9 |
 
 To express a fitted **J** of a pair in the global frame, or that of a pair related by a rotation
-*R*: `shf.models.anisotropic_exchange.J_local_to_global(emat, J, R)` (the pair frame is
+*R*: `spinh.models.anisotropic_exchange.J_local_to_global(emat, J, R)` (the pair frame is
 (*R* emat<sup>T</sup>)<sup>T</sup>), e.g. for C₃-related pairs
-`R = shf.geometry.euler_zyz(120, 0, 0)`.
+`R = spinh.geometry.euler_zyz(120, 0, 0)`.

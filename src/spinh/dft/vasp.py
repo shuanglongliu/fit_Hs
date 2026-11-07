@@ -9,7 +9,7 @@ import subprocess
 
 import numpy as np
 
-from shf.dft.slurm import sbatch
+from spinh.dft.slurm import sbatch
 
 
 class VaspJob:

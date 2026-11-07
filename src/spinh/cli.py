@@ -1,4 +1,4 @@
-"""Command line: ``shf <command> ...``; ``shf -h`` lists the commands."""
+"""Command line: ``spinh <command> ...``; ``spinh -h`` lists the commands."""
 
 import argparse
 import os
@@ -27,12 +27,12 @@ def cmd_new(args):
 
 
 def cmd_isotropic_exchange(args):
-    from shf.models import isotropic_exchange
+    from spinh.models import isotropic_exchange
     isotropic_exchange.fit(factor=args.factor, energy_threshold=args.threshold)
 
 
 def cmd_anisotropic_exchange(args):
-    from shf.models import anisotropic_exchange as ae
+    from spinh.models import anisotropic_exchange as ae
     if args.task == "fit":
         ae.fit(factor=args.factor, quantum_correction=args.quantum_correction, iformat=args.format)
     elif args.task == "average":
@@ -44,7 +44,7 @@ def cmd_anisotropic_exchange(args):
 
 
 def cmd_anisotropy(args):
-    from shf.models import single_ion_anisotropy as sia
+    from spinh.models import single_ion_anisotropy as sia
     with open(args.config) as f:
         config = yaml.safe_load(f)
     cfg = dict(config[args.task])
@@ -53,12 +53,12 @@ def cmd_anisotropy(args):
 
 
 def cmd_polarization(args):
-    from shf.models import polarization
+    from spinh.models import polarization
     polarization.MODELS[args.model]()
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog="shf", description="Spin Hamiltonian fitting.")
+    parser = argparse.ArgumentParser(prog="spinh", description="Spin Hamiltonian fitting.")
     sub = parser.add_subparsers(dest="command", required=True)
 
     def add(name, func, help):
