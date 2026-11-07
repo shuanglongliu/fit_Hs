@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -18,4 +18,7 @@ structure = ["ase"]
 spinh = "spinh.cli:main"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+include = ["spinh*"]
+
+[tool.setuptools.package-data]
+spinh = ["templates/*/*"]

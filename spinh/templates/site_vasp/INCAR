@@ -1,0 +1,134 @@
+
+SYSTEM = vasp
+
+#### symmetry ####
+#ISYM = 0
+
+#### system size ####
+#NBANDS = 448
+#NELECT = 664.0
+
+#### accuracy ####
+PREC = Accurate
+ENCUT = 500
+LREAL = A
+
+#### parallelization ####
+#KPAR = 4
+NCORE = 8
+
+#### density functional ####
+
+#=== LDA/GGA ===#
+#GGA = PE
+
+#=== METAGGA ===#
+#METAGGA = R2SCAN
+
+#=== Hybrid: HSE06 ===#
+LHFCALC = T 
+GGA = PE
+HFSCREEN = 0.2 
+PRECFOCK = Accurate
+
+#=== vdW-DF: optB86b ===#
+#GGA      = MK 
+#PARAM1   = 0.1234 
+#PARAM2   = 1.0
+#AGGAC    = 0.0
+#LUSE_VDW = .TRUE.
+#LASPH    = .TRUE.
+
+#=== LIBXC ===#
+#GGA = LIBXC
+#LIBXC1 = GGA_X_PBE
+#LIBXC2 = GGA_C_PBE
+
+#### empirical vdW ####
+#IVDW = 11
+
+#### LDA+U ####
+#LDAU = T
+#LDAUTYPE = 2
+#LDAUPRINT = 1
+#LDAUL =   2   -1    -1   -1   -1   -1   -1  
+#LDAUU =   2.5  0.0   0.0  0.0  0.0  0.0  0.0
+#LDAUJ =   0.0  0.0   0.0  0.0  0.0  0.0  0.0
+
+#### electronic optimization ####
+EDIFF = 1E-6
+NELM = 120
+#NELMIN = 10
+NELMDL = -12
+AMIX = 0.3
+AMIX_MAG = 0.6
+AMIX_MIN = 0.1
+BMIX = 0.0001
+BMIX_MAG = 0.0001
+ALGO = All
+# TIME = 0.35
+
+#### structural relaxation ####
+#NSW = 500
+#IBRION = 2
+#ISIF = 2
+#EDIFFG = -0.02
+#POTIM = 0.3
+
+#### magnetism: accuracy ####
+LASPH = T
+GGA_COMPAT = F
+
+#### magnetism: collinear spin ####
+#ISPIN = 2
+#MAGMOM = 3.0 3.0 3.0 1000*0.0
+#NUPDOWN = 9
+
+#### magnetism: noncollinear spin, SOC ####
+LSORBIT = T
+SAXIS = 0 0 1
+MAGMOM = {mstring:s} 3000*0.0
+
+#### magnetism: constraint ####
+I_CONSTRAINED_M = 4
+M_CONSTR = {mstring:s} 3000*0.0
+
+LAMBDA =  15.0
+RWIGS = {rwigs:s}
+
+#### magnetism: orbital moment ####
+LORBMOM = T
+
+#### charge, wavefunction ####
+ISTART = 0
+ICHARG = 1
+LWAVE = T
+LCHARG = F
+LAECHG = F
+LMAXMIX = 6
+
+#### dos ####
+ISMEAR = 0
+SIGMA = 0.01
+#NEDOS = 2501
+#EMIN = -15
+#EMAX = 10
+LORBIT = 10
+
+#### Partial Charge ####
+#LPARD = T
+#EINT = -5.0000  -4.7355
+#EINT = -4.7355 -4.0500
+
+#### wann ####
+#LWANNIER90 = .T.
+#LWRITE_UNK = .TRUE.
+
+#### polarization ####
+#IDIPOL = 4
+#LDIPOL = T
+#DIPOL = 0.5 0.5 0.5
+#LCALCPOL = T
+
+#### occupation matrix control ####
+#OCCEXT = 1

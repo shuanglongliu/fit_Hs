@@ -34,6 +34,7 @@ def reference(name):
 def snapshot(root):
     """Files (hash) and links (target) under root, like the stored reference trees."""
     root = os.path.abspath(root)
+    real = os.path.realpath(root)      # /tmp is /private/tmp on macOS
     out = []
     for d, dirs, files in sorted(os.walk(root)):
         dirs.sort()
@@ -43,7 +44,7 @@ def snapshot(root):
             if rel.endswith(".py") or "__pycache__" in rel:
                 continue
             if os.path.islink(p):
-                out.append(f"L {rel} -> {os.readlink(p).replace(root, '<ROOT>')}")
+                out.append(f"L {rel} -> {os.readlink(p).replace(real, '<ROOT>').replace(root, '<ROOT>')}")
             else:
                 with open(p, "rb") as fh:
                     out.append(f"F {rel} {hashlib.sha256(fh.read()).hexdigest()[:16]}")
@@ -91,10 +92,19 @@ class TestGeometry(unittest.TestCase):
             Rz = geometry.euler_zyz(gamma, 0, 0, degrees=False)
             np.testing.assert_allclose(geometry.rotate_frame(np.eye(3), 0, beta, gamma), (Rz @ Ry).T, atol=1e-12)
 
+    def test_emat_local(self):
+        """A right-handed frame with z along the direction, also along +-x and for lists."""
+        for d in [(90, 0), [90, 0], (90, 180), (0, 0), (180, 0), (37, 123)]:
+            emat = geometry.get_emat_local(d)
+            np.testing.assert_allclose(emat @ emat.T, np.eye(3), atol=1e-12)
+            self.assertAlmostEqual(np.linalg.det(emat), 1.0)
+            np.testing.assert_allclose(emat[2], geometry.sph2cart([1, *d]), atol=1e-12)
+
     def test_sphere(self):
         sphere = Sphere()
         for index in [0, 1, 3599, 3600, 3601, 4319101, sphere.n_direction - 1]:
             self.assertEqual(sphere.index(sphere.direction(index)), index)
+        self.assertEqual(sphere.direction(sphere.index((90, -90))), (90.0, 270.0))
 
     def test_spin_operators(self):
         for S in (0.5, 1, 1.5, 4):
@@ -120,9 +130,12 @@ class TestTemplates(TempDirTest):
         return path
 
     def check_tree(self, template, name, *actions):
+        """The job directories (not the inputs in the root directory) match the reference."""
+        def job_dirs(entries):
+            return [e for e in entries if "/" in e.split()[1]]
         path = self.run_template(template, *actions)
         expected = json.loads(reference("job_trees.json"))[name]
-        self.assertEqual(snapshot(path), expected)
+        self.assertEqual(job_dirs(snapshot(path)), job_dirs(expected))
 
     def test_site(self):
         self.check_tree("site_vasp", "site_magnetic_moment", "setup")
@@ -138,9 +151,13 @@ class TestTemplates(TempDirTest):
 
     def test_site_spin_directions(self):
         """The spin set: MAGMOM = moments opposite to the listed spin directions."""
-        path = self.run_template("site_vasp", "setup", edit=lambda t: t.replace(
-            "    myjob = do(direction_emin = (0.0, 0.0))\n    # myjob = do_spin(",
-            "    # myjob = do(direction_emin = (0.0, 0.0))\n    myjob = do_spin("))
+        main = (
+            "from spinh.dft import SiteJobs, recipes\n"
+            "jobs = SiteJobs(magnetic_moments=[2, 2, 3], directions_of='spin')\n"
+            "jobs.set_frames([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]] * 3)\n"
+            "jobs.add_uniform(recipes.great_circles(n_theta=7, n_phi=12), frame='local')\n"
+            "jobs.run()\n")
+        path = self.run_template("site_vasp", "setup", edit=lambda t: main)
         with open(os.path.join(path, "0_0_0", "INCAR")) as f:
             incar = f.read()
         self.assertIn("MAGMOM =    0.0000000000   0.0000000000  -2.0000000000", incar)
@@ -158,18 +175,68 @@ class TestTemplates(TempDirTest):
         self.assertEqual(data.shape, (len(names), 21))
         self.assertEqual(sorted(data[:, -1]), sorted(-100.0 - np.arange(len(names))))
 
+    def test_exchange_pair(self):
+        """add_exchange_pair -> exchange_energies.yaml -> spinh fit anisotropic-exchange gives back J."""
+        from spinh.dft import SiteJobs
+        frame = geometry.rotate_frame(np.eye(3), *np.radians([10, 40, 70]))     # pair frame, rows = axes
+        J = np.array([[1.0, 0.3, -0.2], [0.1, -0.5, 0.4], [0.2, -0.1, 0.8]])   # meV, in the pair frame
+        jobs = SiteJobs(magnetic_moments=[3, 3], root=self.tmp)
+        jobs.set_frames({0: frame, 1: frame})
+        jobs.add_exchange_pair(0, 1, frame="local")
+        self.assertEqual(jobs.n_conf, 18)
+        for conf, name in zip(jobs.configurations, jobs.dir_names):
+            Si, Sj = [frame @ geometry.sph2cart([1.5, *d]) for d in conf]
+            os.makedirs(os.path.join(self.tmp, name))
+            with open(os.path.join(self.tmp, name, "OUTCAR"), "w") as f:
+                f.write(f"  energy(sigma->0) =  {-2 * Si @ J @ Sj / 1000 - 50:.10f}\n")
+        with contextlib.redirect_stdout(io.StringIO()):
+            jobs.write_energies()
+        with open(os.path.join(self.tmp, "fit.yaml"), "w") as f:
+            yaml.safe_dump({"spins": [1.5, 1.5], "energies": "exchange_energies.yaml",
+                            "exchange": [{"pair": [1, 2], "reference_frame": frame.flatten().tolist()}]}, f)
+        out = self.spinh("fit", "anisotropic-exchange", "-d", self.tmp)
+        meV = [float(v) for v in out.split("J (meV):")[1].split("\n")[0].split()]
+        np.testing.assert_allclose(meV, J.flatten(), atol=2e-3)
+
+
+class TestCommands(TempDirTest):
+
+    def test_job_actions(self):
+        """python main.py help lists the same core actions for every job template."""
+        for template in ("collinear_vasp", "collinear_orca", "site_vasp", "saxis_vasp"):
+            path = self.new(template)
+            out = subprocess.run([sys.executable, "main.py", "help"], cwd=path, capture_output=True, text=True,
+                                 check=True).stdout
+            for name in ("print", "setup", "submit", "check", "resubmit", "energies"):
+                self.assertIn(f"  {name} ", out, template)
+
+    def test_new_lists_templates(self):
+        out = self.spinh("new")
+        for template in ("site_vasp", "fit_anisotropy"):
+            self.assertIn(template, out)
+
+    def test_migrate(self):
+        """spinh migrate writes the inputs of an old data.py."""
+        os.makedirs(os.path.join(self.tmp, "old"))
+        with open(os.path.join(self.tmp, "old", "data.py"), "w") as f:
+            f.write("incar = 'MAGMOM = {mstring}\\n'\nposcar = 'P'\nkpoints = 'K'\njob_script = 'J'\nwave_dir = '0'\n")
+        out = self.spinh("migrate", os.path.join(self.tmp, "old"))
+        with open(os.path.join(self.tmp, "old", "INCAR")) as f:
+            self.assertEqual(f.read(), "MAGMOM = {mstring}\n")
+        self.assertIn("wave_dir", out)
+
 
 class TestFits(TempDirTest):
 
     def test_isotropic_exchange(self):
         path = self.new("fit_isotropic_exchange")
-        self.spinh("isotropic-exchange", "-d", path)
+        self.spinh("fit", "isotropic-exchange", "-d", path)
         with open(os.path.join(path, "Js.csv")) as f:
             self.assertEqual(f.read(), reference("Js.csv"))
 
     def test_anisotropic_exchange(self):
         path = self.new("fit_anisotropic_exchange")
-        out = self.spinh("anisotropic-exchange", "fit", "-d", path, "--format", "2")
+        out = self.spinh("fit", "anisotropic-exchange", "-d", path)
         meV = [float(v) for v in out.split("J (meV):")[1].split("\n")[0].split()]
         self.assertEqual(len(meV), 27)
         self.assertAlmostEqual(meV[0], -1.884, places=3)
@@ -177,20 +244,22 @@ class TestFits(TempDirTest):
 
     def test_polarization(self):
         for template, model, files in [
-            ("fit_polarization_alpha_pi", "alpha-pi", {"log": "alpha_pi.log"}),
-            ("fit_polarization_full_p_v1", "full-p-v1", {"P_total.log": "full_p_v1_P_total.log"}),
-            ("fit_polarization_full_p_v2", "full-p-v2", {"P_for_latex.log": "full_p_v2_P_for_latex.log",
+            ("fit_polarization_alpha_pi", "polarization-alpha-pi", {"log": "alpha_pi.log"}),
+            ("fit_polarization_full_p_v1", "polarization-full-p-v1", {"P_total.log": "full_p_v1_P_total.log"}),
+            ("fit_polarization_full_p_v2", "polarization-full-p-v2", {"P_for_latex.log": "full_p_v2_P_for_latex.log",
                                                          "relative_contribution.log": "full_p_v2_relative_contribution.log"})]:
             path = self.new(template)
-            self.spinh("polarization", model, "-d", path)
+            self.spinh("fit", model, "-d", path)
             for out, ref in files.items():
                 with open(os.path.join(path, out)) as f:
                     self.assertEqual(f.read(), reference(ref), out)
 
     def test_anisotropy_tasks(self):
         path = self.new("fit_anisotropy")
-        for task in ("average", "change-frame", "mae", "plot", "fit-DE", "fit-D-tensor", "fit-curve", "fit-surface"):
-            self.spinh("anisotropy", task, "-d", path)
+        for tool in ("average-opposite", "change-frame", "mae", "plot"):
+            self.spinh("tool", tool, "-d", path)
+        for model in ("anisotropy-DE", "anisotropy-D-tensor", "anisotropy-curve", "anisotropy-surface"):
+            self.spinh("fit", model, "-d", path)
         for out, ref in (("energies_average.dat", "energies_average.dat"), ("new_frame.dat", "new_frame.dat")):
             with open(os.path.join(path, out)) as f:
                 self.assertEqual(f.read(), reference(ref), out)
@@ -206,7 +275,7 @@ class TestFits(TempDirTest):
                     n = frame @ geometry.sph2cart([1, th, ph])
                     e = 4 * (D * n[2]**2 + E * (n[0]**2 - n[1]**2)) / 1000 - 50
                     f.write(f"{th} {ph} {e:.12f}\n")
-        cfg = {"input": "e", "columns": [1, 2, 3], "spin": 2, "model": "classical",
+        cfg = {"data": "e.dat", "columns": [1, 2, 3], "spin": 2, "model": "classical",
                "bounds": {"D": [-2, 0], "E": [-0.5, 0], "E0": [-10, 10], "alpha": [0, 90], "beta": [0, 90],
                           "gamma": [0, 180]},
                "p0": {"D": -0.5, "E": -0.1, "E0": 0, "alpha": 20, "beta": 20, "gamma": 40}}

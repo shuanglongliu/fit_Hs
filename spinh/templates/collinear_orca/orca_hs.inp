@@ -1,0 +1,52 @@
+
+# --- Method & relativistic treatment ---
+# ZORA scalar relativistics are essential for lanthanides
+# TPSSh gives reliable J values for transition/lanthanide systems
+! PBE ZORA DefGrid2 TightSCF MORead KDIIS NoTRAH # SlowConv
+
+%basis
+    # All-electron ZORA basis for lanthanide atoms — must use SARC
+    NewGTO Ce "SARC-ZORA-TZVP" end
+
+    # ZORA-recontracted triple-zeta for transition metal and light atoms
+    NewGTO Cu "ZORA-def2-TZVP"  end
+    NewGTO O  "ZORA-def2-SVP"  end
+    NewGTO N  "ZORA-def2-SVP"  end
+    NewGTO C  "ZORA-def2-SVP"  end
+    NewGTO H  "ZORA-def2-SVP"   end   # SVP for H is sufficient
+end
+
+# --- Parallelization ---
+%pal nprocs {n_cpus:d} end
+
+# --- Memory per core in MB ---
+%maxcore {mem_per_core:d}
+
+# --- SCF options ---
+%scf
+    MaxIter   500
+
+    # Use larger DIIS to help convergence with open-shell lanthanide
+    DIISMaxEq 15
+
+    # Trusted region augmentation Hessian (TRAH): 2nd order SCF
+    # AutoTRAH  true
+
+    # Use the converged HS orbitals as starting guess
+    MOInp "dft.gbw"
+
+    # Flip spins on magnetic centers (0-based atom indices)
+    # {flip_spin_tag:s} {flip_spin:s}
+    # {final_ms_tag:s} {final_ms:.1f}
+end
+
+# --- Output: natural population analysis useful for spin analysis ---
+%output
+    Print[P_Mulliken]   1
+    Print[P_Loewdin]  1
+end
+
+# ================================================================
+#  CHARGE and MULTIPLICITY
+# ================================================================
+* xyzfile  0  {multiplicity:d}   orca.xyz

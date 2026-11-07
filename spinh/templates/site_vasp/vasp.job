@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#SBATCH --account=m2qm-efrc
+#SBATCH --qos=m2qm-efrc-b
+#SBATCH --job-name=Gd2CeMn8
+#SBATCH --partition=hpg-default
+#SBATCH --constraint=el9
+#SBATCH -t 4-00:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=64
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=512gb
+#SBATCH --distribution=cyclic:cyclic
+#SBATCH --mail-type=None
+#SBATCH --mail-user=shuan.liu@northeastern.edu
+#SBATCH --error=error
+#SBATCH --output=output
+
+module purge
+module load intel/2025.1.0 openmpi/5.0.7 vasp/6.4.3
+
+srun --mpi=pmix_v5 vasp_ncl

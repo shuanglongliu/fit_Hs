@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#SBATCH -A m3346
+#SBATCH -J Mn-MgO
+#SBATCH -C cpu
+#SBATCH --qos=shared
+#SBATCH -t 01:00:00
+#SBATCH -N 1
+#SBATCH -n 64
+#SBATCH -c 2
+#SBATCH --mem=128GB
+#SBATCH --output=output
+#SBATCH --error=error
+#SBATCH --mail-type=None
+#SBATCH --mail-user=shuan.liu@northeastern.edu
+
+source ~/.bash_aliases; keep_log
+
+module load vasp/6.4.3-cpu
+export OMP_NUM_THREADS=1
+
+srun -n 64 -c 2 --cpu-bind=cores vasp_ncl

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#SBATCH -A m3346_g
+#SBATCH -J Ni7
+#SBATCH -C gpu
+#SBATCH -q regular
+#SBATCH -t 24:00:00
+#SBATCH -N 1
+#SBATCH -n 4
+#SBATCH -c 32
+#SBATCH -G 4
+#SBATCH --exclusive
+#SBATCH --error=error
+#SBATCH --output=output
+#SBATCH --mail-type=None
+#SBATCH --mail-user=shuan.liu@northeastern.edu
+
+# Define a function to create STOPCAR after 4 hours
+function create_stopcar() {
+    sleep $((22 * 3600))
+    echo "LABORT = T" > STOPCAR
+    echo "STOPCAR created at $(date)"
+}
+
+export OMP_NUM_THREADS=1
+export OMP_PLACES=threads
+export OMP_PROC_BIND=spread
+
+module load vasp/6.4.3-gpu
+
+source ~/.bash_aliases; keep_log
+
+# Launch in background
+create_stopcar &
+
+srun -n 4 -c 32 --cpu-bind=cores --gpu-bind=none vasp_gam

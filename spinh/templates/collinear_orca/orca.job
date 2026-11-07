@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#SBATCH -A m3346
+#SBATCH -J Ce24Cu
+#SBATCH -C cpu
+#SBATCH --qos=regular
+#SBATCH -t 08:30:00
+#SBATCH -N 1
+#SBATCH -n 32
+#SBATCH -c 8
+#SBATCH --output=output
+#SBATCH --error=error
+#SBATCH --mail-type=None
+#SBATCH --mail-user=shuan.liu@northeastern.edu
+#SBATCH --image=shlliu/orca:3.0
+#SBATCH --volume=/global/cfs/cdirs/m3346/shlufl/apps/orca/6.1.1/linux_x86-64_shared_openmpi418:/opt/orca
+
+source ~/.bash_aliases; keep_log
+
+shifter --env=LD_LIBRARY_PATH=/opt/orca/lib /opt/orca/orca orca.inp > orca.out
+
+#rm -rf orca.densities orca.gbw *.tmp* # NEVPT2

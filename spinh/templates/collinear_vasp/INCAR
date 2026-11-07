@@ -1,0 +1,127 @@
+
+SYSTEM = vasp
+
+#### sym ####
+#ISYM = 0
+
+#### system size ####
+#NBANDS = 448
+#NELECT = 383.0
+
+#### accuracy ####
+PREC = Normal
+ENCUT = 400
+LREAL = A
+
+#### parallelization ####
+#KPAR = 4
+NCORE = 16
+
+#### interactions, e.g. XC ####
+
+### R2SCAN ###
+# METAGGA = R2SCAN
+
+### HS06E ###
+LHFCALC = T 
+GGA = PE
+HFSCREEN = 0.2 
+PRECFOCK = Normal
+
+### B3LYP ###
+# LHFCALC = T
+# GGA     = B5 # VWN5 for LDA correlation 
+# AEXX    = 0.2
+# AGGAX   = 0.72 
+# AGGAC   = 0.81 
+# ALDAC   = 0.19
+# PRECFOCK = Normal
+
+### LDA+U ###
+# LDAU = T
+# LDAUTYPE = 1
+# LDAUPRINT = 1
+# LDAUL =   2    -1   -1   -1 
+# LDAUU =   0.0  0.0  0.0  0.0
+# LDAUJ =   0.0  0.0  0.0  0.0
+
+### vdW ###
+#IVDW = 11
+
+#### electronic optimization ####
+EDIFF = 1E-8
+NELM = 120
+#NELMIN = 10
+#NELMDL = -9
+AMIX = 0.3
+AMIX_MAG = 0.6
+AMIX_MIN = 0.05
+BMIX = 0.0001
+BMIX_MAG = 0.0001
+ALGO = All
+
+#### structural relaxation ####
+# NSW = 3
+# IBRION = -2
+#ISIF = 2
+#EDIFFG = -0.02
+#POTIM = 0.3
+
+#### magnetism: accuracy ####
+LASPH = T
+GGA_COMPAT = F
+
+#### magnetism: collinear spin ####
+ISPIN = 2
+MAGMOM = {magmom:s}
+# NUPDOWN = {nupdown:.1f}
+
+#### magnetism: noncollinear spin, SOC ####
+#LSORBIT = T
+#SAXIS = 0 0 1
+#MAGMOM =   -0.5922559638   3.3976757925  -2.0260878763   # 3000*0.0
+
+#### magnetism: constraint ####
+#I_CONSTRAINED_M = 1
+#M_CONSTR =   -0.5922559638   3.3976757925  -2.0260878763   # 3000*0.0
+#LAMBDA =  10.0
+#RWIGS = 1.323 1.635 0.863 0.370 0.820
+
+
+#### magnetism: orbital moment ####
+# LORBMOM = T
+
+#### charge, wavefunction ####
+ISTART = 1
+ICHARG = 0
+LWAVE = T
+LCHARG = F
+LAECHG = F
+LMAXMIX = 4
+
+#### dos ####
+ISMEAR = 0
+SIGMA = 0.02
+# NEDOS = 501
+# EMIN = -15
+# EMAX = 10
+LORBIT = 10
+
+#### Partial Charge ####
+#LPARD = T
+#EINT = -5.0000  -4.7355
+#EINT = -4.7355 -4.0500
+
+#### wann ####
+#LWANNIER90 = .T.
+#LWRITE_UNK = .TRUE.
+
+### polarization ###
+#IDIPOL = 4
+#LMONO = T
+#LDIPOL = T
+#LCALCPOL = T
+#DIPOL = 0.5 0.5 0.5 
+
+### occupation matrix control ###
+#OCCEXT = 1

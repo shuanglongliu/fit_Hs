@@ -1,20 +1,22 @@
 # Spin-driven electric polarization
 
 DFT: `site_vasp` (`python main.py dipoles` writes `dipoles.dat`). Fit: `spinh new
-fit_polarization_<model> <dir>`, then in it `spinh polarization <model>`.
+fit_polarization_<model> <dir>`, then in it `spinh fit polarization-<model>` (`alpha-pi`,
+`full-p-v1` or `full-p-v2`). `fit.yaml` names the table (`data: dipoles.dat`) and holds the
+settings below.
 
 All models fit *y*, the change of the dipole of every configuration relative to the first one,
 by minimizing |*A x* − *y*|². When the data do not determine every parameter, the minimum-norm
 solution is returned with a warning that says how many combinations are undetermined.
 
-`dipoles.dat`: θ, φ (degrees) of every site, then *p*<sub>x</sub>, *p*<sub>y</sub>,
+The table: θ, φ (degrees) of every site, then *p*<sub>x</sub>, *p*<sub>y</sub>,
 *p*<sub>z</sub> (e Å); the first row is the reference.
 
 ## `alpha-pi`
 
 $$\mathbf{p} = \sum_{\langle ij \rangle} \Big[ \alpha_{ij} \big( \mathbf{S}_i (\mathbf{S}_j \cdot \mathbf{e}_{ij}) - (\mathbf{S}_i \cdot \mathbf{e}_{ij}) \mathbf{S}_j \big) + \boldsymbol{\pi}_{ij} (\mathbf{S}_i \cdot \mathbf{S}_j) \Big]$$
 
-**e**<sub>ij</sub> is the unit vector from site *i* to site *j*. `input.yaml`: `spins`, `pairs`
+**e**<sub>ij</sub> is the unit vector from site *i* to site *j*. `fit.yaml`: `spins`, `pairs`
 (1-indexed), `positions` (Å), `constraints_alpha` (`[pair_i, pair_j]`: equal α) and
 `constraints_pi` (`[pair_i, pair_j, α, β, γ]`: **π**(pair_j) = *R* **π**(pair_i), *R* from
 extrinsic zyz Euler angles in degrees). Output: `log`, `fitting_quality.pdf`.
